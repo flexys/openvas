@@ -20,15 +20,29 @@ RUN cat *.tar.gz | tar -xzvf - -i
 RUN ls -al
 
 # install dependencies
+#RUN apt-get -y install gcc bison flex cmake
 RUN apt-get update && apt-get -y install dpkg-dev pkg-config libssh-dev libgnutls28-dev libglib2.0-dev \
                libpcap-dev libgpgme11-dev uuid-dev bison libksba-dev libhiredis-dev \
-               libsnmp-dev libgcrypt20-dev libldap2-dev cmake
+               libsnmp-dev libgcrypt20-dev libldap2-dev cmake \
+               libmicrohttpd-dev libxml2-dev libxslt1-dev
+RUN apt-get -y install python3-pip python3-paramiko python3-lxml python3-dialog python3-defusedxml
 
 # compile
-RUN cd gvm-libs-9.0.3 && \
-  mkdir build && \
-  cd build && \
-  cmake .. && \
-  make install
+#ADD compile_openvas.sh .
+#RUN chmod +x compile_openvas.sh
+#RUN ./compile_openvas.sh
+#
+
+RUN cd gvm-libs-9.0.3 && mkdir build && cd build && cmake .. && make install
+RUN cd openvas-scanner-5.1.3 && mkdir build && cd build && cmake .. && make install
+RUN cd gsa-7.0.3 && mkdir build && cd build && cmake .. && make install
+
+RUN apt-get -y install python-setuptools
+RUN cd gvm-tools-1.4.1 && pip3 install . && cat README.rst
+
+RUN apt-get -y install libsqlite3-dev libpq-dev
+RUN cd gvmd-7.0.3 && mkdir build && cd build && cmake .. && make install
+#RUN cd gvmd-7.0.3 && cat INSTALL
+
 
 # startup
