@@ -44,5 +44,10 @@ RUN apt-get -y install libsqlite3-dev libpq-dev
 RUN cd gvmd-7.0.3 && mkdir build && cd build && cmake .. && make install
 #RUN cd gvmd-7.0.3 && cat INSTALL
 
+RUN apt-get -y install gcc cmake pkg-config gcc-mingw-w64 libgnutls28-dev \
+  perl-base heimdal-dev libpopt-dev libglib2.0-dev
+RUN cd openvas-smb-1.0.4 && mkdir build && cd build && cmake .. && make install
+#RUN cd openvas-smb-1.0.4 && cat INSTALL
+
 
 # startup
