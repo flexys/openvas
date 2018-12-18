@@ -37,8 +37,15 @@ RUN cd openvas-smb-1.0.4 && mkdir build && cd build && cmake .. && make install
 RUN cd ospd-1.2.0 && python setup.py install
 # todo clean up build dirs
 
+# install and configre redis
+RUN apt-get -y install redis-server
+RUN cp /etc/redis/redis.conf /etc/redis/redis.orig && \
+    echo "unixsocket /tmp/redis.sock" >> /etc/redis/redis.conf && \
+    service redis-server restart
+
 # setup
-RUN greenbone-nvt-sync & greenbone-scrapdata-sync && greenbone-certdata-sync
+# certs
+RUN openvas-mkcert && openvas-mkcert-client -n -i && openvas-manage-certs -a
 
 
 
