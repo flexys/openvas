@@ -27,7 +27,7 @@ RUN apt-get update && apt-get -y install dpkg-dev pkg-config libssh-dev libgnutl
                perl-base heimdal-dev libpopt-dev libglib2.0-dev \
                python3-pip python3-paramiko python3-lxml python3-dialog python3-defusedxml \
                libsqlite3-dev libpq-dev python-setuptools redis-server gnutls-bin \
-               sqlite3 rsync
+               sqlite3 rsync xsltproc
 
 RUN cd gvm-libs-9.0.3 && mkdir build && cd build && cmake .. && make install
 RUN cd openvas-scanner-5.1.3 && mkdir build && cd build && cmake .. && make install
@@ -50,7 +50,6 @@ RUN ldconfig
 RUN openvasmd --create-user=admin --role=Admin && openvasmd --user=admin --new-password=1
 # update content
 RUN /usr/local/sbin/greenbone-nvt-sync
-RUN apt-get -y install xsltproc
 RUN /usr/local/sbin/greenbone-scapdata-sync
 RUN /usr/local/sbin/greenbone-certdata-sync
 
