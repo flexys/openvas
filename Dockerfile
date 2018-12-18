@@ -26,23 +26,35 @@ RUN apt-get update && apt-get -y install dpkg-dev pkg-config libssh-dev libgnutl
                gcc gcc-mingw-w64 libgnutls28-dev \
                perl-base heimdal-dev libpopt-dev libglib2.0-dev \
                python3-pip python3-paramiko python3-lxml python3-dialog python3-defusedxml \
-               libsqlite3-dev libpq-dev python-setuptools
+               libsqlite3-dev libpq-dev python-setuptools redis-server gnutls-bin \
+               sqlite3 rsync
 
 RUN cd gvm-libs-9.0.3 && mkdir build && cd build && cmake .. && make install
 RUN cd openvas-scanner-5.1.3 && mkdir build && cd build && cmake .. && make install
 RUN cd gsa-7.0.3 && mkdir build && cd build && cmake .. && make install
-RUN cd gvm-tools-1.4.1 && pip3 install . && cat README.rst
+RUN cd gvm-tools-1.4.1 && pip3 install .
 RUN cd gvmd-7.0.3 && mkdir build && cd build && cmake .. && make install
 RUN cd openvas-smb-1.0.4 && mkdir build && cd build && cmake .. && make install
 RUN cd ospd-1.2.0 && python setup.py install
-# todo clean up build dirs
+# todo clean up build dirs & tars
 
 # setup
 RUN mkdir -p /usr/local/var/lib/openvas/openvasmd/gnupg
-RUN apt-get -y install redis-server
+# configure redis
 RUN cp /etc/redis/redis.conf /etc/redis/redis.orig && \
     echo "unixsocket /tmp/redis.sock" >> /etc/redis/redis.conf && \
     service redis-server restart
+# set up certs & user
+RUN openvas-manage-certs -a
+RUN ldconfig
+RUN openvasmd --create-user=admin --role=Admin && openvasmd --user=admin --new-password=1
+# update content
+RUN /usr/local/sbin/greenbone-nvt-sync
+RUN apt-get -y install xsltproc
+RUN /usr/local/sbin/greenbone-scapdata-sync
+RUN /usr/local/sbin/greenbone-certdata-sync
+
+
 
 
 # startup
