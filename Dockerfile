@@ -35,5 +35,11 @@ RUN cd gvm-tools-1.4.1 && pip3 install . && cat README.rst
 RUN cd gvmd-7.0.3 && mkdir build && cd build && cmake .. && make install
 RUN cd openvas-smb-1.0.4 && mkdir build && cd build && cmake .. && make install
 RUN cd ospd-1.2.0 && python setup.py install
+# todo clean up build dirs
+
+# setup
+RUN greenbone-nvt-sync & greenbone-scrapdata-sync && greenbone-certdata-sync
+
+
 
 # startup
